@@ -22,56 +22,45 @@
   <textarea id="editor" placeholder="Your file content will appear here..." disabled></textarea>
 
   <script>
-    let fileHandle;
+	let fileHandle;
 
-    const openBtn = document.getElementById('openBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const editor = document.getElementById('editor');
+		const openBtn = document.getElementById('openBtn');
+		const saveBtn = document.getElementById('saveBtn');
+		const editor = document.getElementById('editor');
 
-    // --- 1. Open and Read the File ---
-    openBtn.addEventListener('click', async () => {
-      try {
-        // Prompt the user to choose a file
-        [fileHandle] = await window.showOpenFilePicker({
-          types: [{
-            description: 'Text Files',
-            accept: { 'text/plain': ['.txt'] },
-          }],
-        });
+		// --- 1. Open and Read the File ---
+		openBtn.addEventListener('click', async () => {
+		  try {
+			// Prompt the user to choose a file (No filters = all file types allowed)
+			[fileHandle] = await window.showOpenFilePicker();
 
-        // Get the file data and read it as text
-        const file = await fileHandle.getFile();
-        const contents = await file.text();
+			// Get the file data and read it as text
+			const file = await fileHandle.getFile();
+			const contents = await file.text();
 
-        // Populate the textarea and enable editing/saving
-        editor.value = contents;
-        editor.disabled = false;
-        saveBtn.disabled = false;
-        
-      } catch (error) {
-        // This catches if the user cancels the file picker prompt
-        console.log('File selection cancelled or failed:', error);
-      }
-    });
+			// Populate the textarea and enable editing/saving
+			editor.value = contents;
+			editor.disabled = false;
+			saveBtn.disabled = false;
+			
+		  } catch (error) {
+			console.log('File selection cancelled or failed:', error);
+		  }
+		});
 
-    // --- 2. Write and Save the File ---
-    saveBtn.addEventListener('click', async () => {
-      try {
-        // Request a writable stream to the same file handle
-        const writable = await fileHandle.createWritable();
-        
-        // Write the current contents of the textarea to the file
-        await writable.write(editor.value);
-        
-        // Close the file (this actually commits the changes to the disk)
-        await writable.close();
-        
-        alert('File saved successfully!');
-      } catch (error) {
-        console.error('Error saving the file:', error);
-        alert('Failed to save the file. Did you grant permission?');
-      }
-    });
+		// --- 2. Write and Save the File ---
+		saveBtn.addEventListener('click', async () => {
+		  try {
+			const writable = await fileHandle.createWritable();
+			await writable.write(editor.value);
+			await writable.close();
+			
+			alert('File saved successfully!');
+		  } catch (error) {
+			console.error('Error saving the file:', error);
+			alert('Failed to save the file. Did you grant permission?');
+		  }
+		});
   </script>
 
 </body>
